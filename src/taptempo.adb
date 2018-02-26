@@ -51,7 +51,7 @@ package body TapTempo is
    procedure Run (Tempo : in out Tap_Tempo) is
       Should_Continue : Boolean := True;
    begin
-      Put_Line ("Hit enter key for each beat (q to quit).\n");
+      Put_Line ("Hit enter key for each beat (q to quit).");
 
       Continue_Loop :
       while Should_Continue loop

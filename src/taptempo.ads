@@ -1,7 +1,4 @@
-with Ada.Containers.Vectors;
 with Ada.Containers; use Ada.Containers;
-
-with Ada.Real_Time; use Ada.Real_Time;
 
 package TapTempo is
 

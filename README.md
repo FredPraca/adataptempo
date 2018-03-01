@@ -5,15 +5,15 @@ The purpose is only educational to show the differences between C++ code and Ada
 
 ## dependencies
 
-This project only depends on [Parse_Args](https://github.com/jhumphry/parse_args/) for arguments parsing.
-It might also depend on [ZanyBlue](https://sourceforge.net/projects/zanyblue/files/) in the future for I18N.
+This project depends on [Parse_Args](https://github.com/jhumphry/parse_args/) for arguments parsing and [ZanyBlue](https://sourceforge.net/projects/zanyblue/files/) for i18n.
 
 ## Building the code
 
-To build the project, you need you checkout the code from _Parse_Args_ and then use _gprbuild_ like this
+To build the project, you need you checkout the code from _Parse_Args_, get the code from _ZanyBlue_ and then use _gprbuild_ like this
 
 ```bash
-gprbuild -aP PATH_TO_PARSE_ARGS
+export ADA_PROJECT_PATH=PATH_TO_PARSE_ARGS:PATH_TO_ZANY_BLUE_GPR
+make
 ```
 ## Using it
 

@@ -1,6 +1,5 @@
-with Ada.Containers.Vectors;
 with Ada.Containers; use Ada.Containers;
-
+with Ada.Containers.Vectors;
 with Ada.Real_Time; use Ada.Real_Time;
 
 package TapTempo is
@@ -19,14 +18,15 @@ package TapTempo is
 
 private
 
-   -- Time vector type
-   package Time_Vectors is new Ada.Containers.Vectors(Index_Type   => Positive,
-						      Element_Type => Time);
+   --  Time vector type
+   package Time_Vectors is new
+               Ada.Containers.Vectors (Index_Type   => Positive,
+                                       Element_Type => Time);
    use Time_Vectors;
 
    type Tap_Tempo is record
-      Size                 : Sample_Size := 1;
-      Reset_Time_In_Second : Seconds     := 1;
+      Size                 : Sample_Size := 5;
+      Reset_Time_In_Second : Seconds     := 5;
       Precision_Needed     : Precision   := 1;
       Time_Vector          : Time_Vectors.Vector;
    end record;

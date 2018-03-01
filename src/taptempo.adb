@@ -1,8 +1,8 @@
-with Ada.Text_IO;         use Ada.Text_IO;
-with Ada.Float_Text_IO;   use Ada.Float_Text_IO;
+with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Ada.Characters.Latin_1;
-with Ada.Containers;      use Ada.Containers;
+with TapTempo_Messages.taptempo_Prints; use TapTempo_Messages.taptempo_Prints;
 
 package body TapTempo is
 
@@ -26,11 +26,23 @@ package body TapTempo is
    function Is_Reset_Time_Elapsed
      (Tempo        : Tap_Tempo;
       Current_Time : Time;
+      Last_Time    : Time) return Boolean;
+
+   function Compute_BPM
+     (Current_Time    : Time;
+      Last_Time       : Time;
+      Occurence_Count : Count_Type) return Float;
+
+   function Is_Reset_Time_Elapsed
+     (Tempo        : Tap_Tempo;
+      Current_Time : Time;
       Last_Time    : Time) return Boolean
    is
-      Elapsed_Time : Time_Span := Current_Time - Last_Time;
+      Elapsed_Time : constant Time_Span := Current_Time - Last_Time;
    begin
-      return Elapsed_Time > Ada.Real_Time.Seconds (Integer (Tempo.Reset_Time_In_Second));
+      return Elapsed_Time > Ada.Real_Time.Seconds (
+                      Integer (Tempo.Reset_Time_In_Second)
+                      );
    end Is_Reset_Time_Elapsed;
 
    function Compute_BPM
@@ -38,8 +50,9 @@ package body TapTempo is
       Last_Time       : Time;
       Occurence_Count : Count_Type) return Float
    is
-      Elapsed_Time : Time_Span := Current_Time - Last_Time;
-      Mean_Time    : Time_Span := Elapsed_Time / Integer (Occurence_Count);
+      Elapsed_Time : constant Time_Span := Current_Time - Last_Time;
+      Mean_Time    : constant Time_Span :=
+             Elapsed_Time / Integer (Occurence_Count);
    begin
       return Float (60.0 / To_Duration (Mean_Time));
    end Compute_BPM;
@@ -51,7 +64,7 @@ package body TapTempo is
    procedure Run (Tempo : in out Tap_Tempo) is
       Should_Continue : Boolean := True;
    begin
-      Put_Line ("Hit enter key for each beat (q to quit).");
+      Print_hitKey;
 
       Continue_Loop :
       while Should_Continue loop
@@ -63,35 +76,39 @@ package body TapTempo is
                Get_Immediate (Key);
                if (Key = 'q') then
                   Should_Continue := False;
-                  Put_Line ("Bye Bye!");
+                  Print_byeBye;
                   exit Get_Key_Loop;
                end if;
 
-               exit when (Key = Ada.Characters.Latin_1.LF);
+               exit Get_Key_Loop when (Key = Ada.Characters.Latin_1.LF);
             end loop Get_Key_Loop;
          end;
 
          if (Should_Continue) then
             declare
-               Current_Time : Time := Clock;
+               Current_Time : constant Time := Clock;
             begin
-               -- Reset if the hit diff is too big.
+               --  Reset if the hit diff is too big.
                if (not Is_Empty (Tempo.Time_Vector)
-		     and then Is_Reset_Time_Elapsed(Tempo,Current_Time,First_Element (Tempo.Time_Vector)))
+                   and then Is_Reset_Time_Elapsed (
+                           Tempo,
+                           Current_Time,
+                           First_Element (Tempo.Time_Vector)))
                then
-                  -- Clear the history
+                  --  Clear the history
                   Clear (Tempo.Time_Vector);
                end if;
 
                Append (Tempo.Time_Vector, Current_Time);
                if (Length (Tempo.Time_Vector) > 1) then
                   declare
-                     BPM : Float := Compute_BPM(Last_Element (Tempo.Time_Vector),
-						First_Element (Tempo.Time_Vector),
-						Length (Tempo.Time_Vector) - 1);
+                     BPM : constant Float := Compute_BPM (
+                           Last_Element (Tempo.Time_Vector),
+                           First_Element (Tempo.Time_Vector),
+                           Length (Tempo.Time_Vector) - 1);
                   begin
                      New_Line;
-                     Put ("Tempo: ");
+                     Print_tempo (With_NL => False);
                      if (Tempo.Precision_Needed = 0) then
                         Put (Integer (BPM));
                      else
@@ -101,8 +118,7 @@ package body TapTempo is
                   end;
                else
                   New_Line;
-                  Put_Line
-                    ("[Hit enter key one more time to start bpm computation...]");
+                  Print_startKey;
                end if;
 
                while (Length (Tempo.Time_Vector) > Tempo.Size) loop
